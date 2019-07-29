@@ -45,19 +45,12 @@ public class Agent26 extends AbstractNegotiationParty {
     public void init(NegotiationInfo info) {
         super.init(info);
 
-        System.out.println("ä»£ç�†åˆ�å§‹åŒ–å¼€å§‹");
         issuesList = info.getUserModel().getDomain().getIssues();
         negotatingInfo = new negotatingInfo(info);
         bidSearch = new bidSearch(info);
-
         biases = bidSearch.getBiases();
-        System.out.println("æµ‹è¯•å��å·®å€¼è°ƒç”¨æ˜¯å�¦æˆ�åŠŸï¼š");
-        System.out.println(biases);
-
         biasMap = bidSearch.getBiasMap();
 
-
-        System.out.println("ä»£ç�†åˆ�å§‹åŒ–ç»“æ�Ÿ");
     }
 
     /**
@@ -73,7 +66,6 @@ public class Agent26 extends AbstractNegotiationParty {
 
 
         if (time < 0.05){
-            System.out.println("å¼€å§‹æ‰¾åˆ°å¤©å‘½");
             myLastOffer = getMaxUtilityBid();
             myLastOfferBiases = getBidBiases(myLastOffer);
             if (lastReceivedOffer != null && myLastOfferBiases < lastReceivedOfferBiases){
@@ -104,7 +96,6 @@ public class Agent26 extends AbstractNegotiationParty {
             if (myLastOffer != null && lastReceivedOffer != null && 0.3 < getBidBiases(lastReceivedOffer)){
                 return  new  Accept(this.getPartyId(), lastReceivedOffer);
             }
-            System.out.println("æŽ¥å�—åŽ†å�²æœ€ä½³");
             if (maxReciverdOfferBiases > lastReceivedOfferBiases && maxReciverdOfferBiases > 0.3){
                 return  new Offer(this.getPartyId(), maxReceviedOffer);
             }
@@ -119,7 +110,6 @@ public class Agent26 extends AbstractNegotiationParty {
 
         if (time >= 0.999){
             if (lastReceivedOffer != null){
-                System.out.println("æ…Œä¸�æ‹©è·¯æŽ¥å�—");
                 return new Accept(this.getPartyId(), lastReceivedOffer);
             }
         }
@@ -151,17 +141,12 @@ public class Agent26 extends AbstractNegotiationParty {
         super.receiveMessage(sender, act);
 
         if (act instanceof Offer) {
-            System.out.println("ä»£ç�† " + sender + "æ”¶åˆ°æŠ¥ä»·");
             Offer offer = (Offer) act;
             lastReceivedOffer = offer.getBid();
-            System.out.println("å¾—åˆ°æŠ¥ä»·ï¼š" + lastReceivedOffer);
-            System.out.println("è¿›å…¥è®°å½•çŠ¶æ€�");
             Double utilitySum = 0.0;
-            System.out.println("è®¡ç®—æ­¤æŠ¥ä»·å¯¹äºŽä»£ç�†çš„å��å·®å€¼");
             for (Issue issue: issuesList){
-                //System.out.println("ä¸€æ¬¡å°�è¯•");
                 Value issueValue = lastReceivedOffer.getValue(issue.getNumber());
-                System.out.println("è¿™ä¸ªæŠ¥ä»·åœ¨ " + issue +  "ä¸Šçš„å€¼ä¸ºï¼š" + issueValue );
+
                 if (biases.get(issue).containsKey(issueValue)){
                     utilitySum = utilitySum + biases.get(issue).get(issueValue);
                 }else {
@@ -169,7 +154,6 @@ public class Agent26 extends AbstractNegotiationParty {
                 }
             }
             lastReceivedOfferBiases = utilitySum;
-            System.out.println("æ­¤æŠ¥ä»·å¯¹äºŽä»£ç�†çš„å��å·®å€¼ï¼š" + utilitySum);
             negotatingInfo.storeGetOffer(lastReceivedOffer, utilitySum);
 
             if (utilitySum > maxReciverdOfferBiases){
@@ -200,9 +184,8 @@ public class Agent26 extends AbstractNegotiationParty {
     private Double getBidBiases(Bid myLastOffer) {
         double biasesSum = 0.0;
         for (Issue issue: issuesList){
-            //System.out.println("ä¸€æ¬¡å°�è¯•");
             Value issueValue = myLastOffer.getValue(issue.getNumber());
-            System.out.println("è¿™ä¸ªæŠ¥ä»·åœ¨ " + issue +  "ä¸Šçš„å€¼ä¸ºï¼š" + issueValue );
+
             biasesSum = biasesSum + biases.get(issue).get(issueValue);
         }
         return  biasesSum;
@@ -213,12 +196,7 @@ public class Agent26 extends AbstractNegotiationParty {
         List<Issue> issueListOfOp = lastReceivedOffer.getIssues();
         List<Issue> myIssueList = myLastOffer.getIssues();
         Value issueValue = null;
-        System.out.println("BiasMap");
-        System.out.println(biasMap);
-        System.out.println("lastReceivedOffer");
-        System.out.println(lastReceivedOffer);
-        System.out.println("myLastOffer");
-        System.out.println(myLastOffer);
+
         int IssueNum = 0;
         Value minValue = null;
         double minBias = 1000000000;
@@ -244,8 +222,6 @@ public class Agent26 extends AbstractNegotiationParty {
                 minValue = issueValue;
                 IssueNum = issue.getNumber();
             }
-            System.out.println("=========min=========");
-            System.out.println(minValue);
         }
 
         for (Issue issue : myIssueList) {
@@ -259,9 +235,6 @@ public class Agent26 extends AbstractNegotiationParty {
             }
         }
         Bid finalBid = new Bid(userModel.getDomain(), newbidvalue);
-        System.out.println("=========newbid=========");
-        System.out.println(finalBid);
-        System.out.println("=========newbid=========");
         return finalBid;
     }
 
@@ -271,12 +244,6 @@ public class Agent26 extends AbstractNegotiationParty {
         List<Issue> issueListOfOp = lastReceivedOffer.getIssues();
         List<Issue> myIssueList = myLastOffer.getIssues();
         Value issueValue = null;
-        System.out.println("BiasMap");
-        System.out.println(biasMap);
-        System.out.println("lastReceivedOffer");
-        System.out.println(lastReceivedOffer);
-        System.out.println("myLastOffer");
-        System.out.println(myLastOffer);
         int IssueNum = 0;
         Value maxValue = null;
         double maxBias = -10000;
@@ -301,8 +268,6 @@ public class Agent26 extends AbstractNegotiationParty {
                 maxValue = issueValue;
                 IssueNum = issue.getNumber();
             }
-            System.out.println("=========max=========");
-            System.out.println(maxValue);
         }
         for (Issue issue : issueListOfOp) {
             int issueNum = issue.getNumber();
@@ -321,9 +286,7 @@ public class Agent26 extends AbstractNegotiationParty {
             }
         }
         Bid finalBid = new Bid(userModel.getDomain(), newbidvalue);
-        System.out.println("=========newbid=========");
-        System.out.println(finalBid);
-        System.out.println("=========newbid=========");
+
         return finalBid;
     }
 }
@@ -350,55 +313,31 @@ class negotatingInfo {
 
 
     public negotatingInfo(NegotiationInfo info) {
-
-        System.out.println("ä¿¡æ�¯åˆ�å§‹åŒ–å¼€å§‹");
         issuesList = info.getUserModel().getDomain().getIssues();               //é€šè¿‡ç”¨æ¨¡åž‹å¾—åˆ°issueåˆ—è¡¨
         valuefrequency = new HashMap<Issue, HashMap<Value, Double>>();         //æ–°å»ºä¸€ä¸ªvaluefrequency
         historyBids = new HashMap<Bid, Double>();                              //æ–°å»ºä¸€ä¸ªhistoryBids
-
-        System.out.println("æˆ‘ä»¬å¾—åˆ°äº†è®ºç‚¹åˆ—è¡¨ï¼š" + issuesList);
-        System.out.println("å¼€å§‹æž„å»ºå¯¹é�¢å‡ºä»·ä¸­çš„valueçš„é¢‘çŽ‡åˆ—è¡¨ï¼š" );
-
-        for (Issue issue: issuesList){                                          //å¯¹äºŽvaluefrequencyä¸­çš„æ¯�ä¸€ä¸ªisuue keyï¼Œæ–°å»ºæ–°çš„å“ˆå¸Œmap
-            //   System.out.println(issue);
+        for (Issue issue: issuesList){
             valuefrequency.put(issue, new HashMap<Value, Double>());
         }
-        System.out.println("æž„å»ºå¯¹é�¢å‡ºä»·ä¸­çš„valueçš„é¢‘çŽ‡åˆ—è¡¨æˆ�åŠŸï¼Œå¾—åˆ°");
-        System.out.println(issuesList);
-        System.out.println("ä¿¡æ�¯åˆ�å§‹åŒ–ç»“æ�Ÿ");
 
     }
 
 
     public void storeGetOffer(Bid lastReceivedOffer, Double utilitySum) {
 
-        System.out.println("è®°å½•å¯¹æ–¹ä¿¡æ�¯å‡ºä»·ï¼š" + lastReceivedOffer);
         for (Issue issue : issuesList) {
             issueValue = lastReceivedOffer.getValue(issue.getNumber());
 
-            System.out.println("è®ºç‚¹ï¼š " + issue + "çš„å€¼ï¼š" + issueValue);
-
             if (!valuefrequency.get(issue).containsKey(issueValue)){
-                System.out.println("å®ƒä¸�åœ¨è®°å½•ä¸­ï¼Œåˆ›å»ºæ–°è®°å½•");
                 valuefrequency.get(issue).put(issueValue, 1.0);
-                System.out.println("åˆ›å»ºæˆ�åŠŸ");
-            } else {
-                System.out.println("å®ƒä¸�åœ¨è®°å½•ä¸­ï¼Œå¼€å§‹ä¿®æ”¹");
-                anumber =  valuefrequency.get(issue).get(issueValue);
 
-                System.out.println("çŽ°åœ¨æœ‰é¢‘æ•°ï¼š" + valuefrequency);
+            } else {
+                anumber =  valuefrequency.get(issue).get(issueValue);
                 anumber = anumber + 1;
                 valuefrequency.get(issue).put(issueValue, anumber);
-                System.out.println("ä¿®æ”¹æˆ�åŠŸï¼�");
-                System.out.println("çŽ°åœ¨æœ‰é¢‘æ•°ï¼š" + valuefrequency);
             }
         }
-        System.out.println("valueé¢‘æ•°æ›´æ–°æˆ�åŠŸï¼Œå¼€å§‹è®°å½•å‡ºä»·æœ¬èº«");
         historyBids.put(lastReceivedOffer, utilitySum);
-        System.out.println("è®°å½•æˆ�åŠŸï¼�");
-        System.out.println(lastReceivedOffer);
-        System.out.println(historyBids.get(lastReceivedOffer));
-        System.out.println("æŽ¥å�—ä¿¡æ�¯è®°å½•ç»“æ�Ÿï¼�");
     }
 }
 
@@ -427,9 +366,6 @@ class bidSearch {
 
 
     public bidSearch(NegotiationInfo info) {
-
-        System.out.println("åˆ�å§‹åŒ–ä»£ç�†ç­–ç•¥ç ”ç©¶");
-
         issuesList = info.getUserModel().getDomain().getIssues();
         bids = info.getUserModel().getBidRanking().getBidOrder();
 
@@ -453,54 +389,24 @@ class bidSearch {
             latterPart.put(issue,new HashMap<Value, Double>() );
         }
 
-
-
-        System.out.println("å¾—åˆ°è®ºç‚¹åˆ—è¡¨ï¼š" + issuesList);
-        System.out.println("å¾—åˆ°å‡ºä»·åˆ—è¡¨ï¼š " + bids);
-        System.out.println("åˆ�å§‹åŒ–ä»£ç�†ç­–ç•¥ç ”ç©¶ç»“æ�Ÿ");
-
-        System.out.println("ä»£ç�†å‡ºä»·æ•°é‡�ï¼š");
         int halfOfLength = (int) bids.size()/2;
-        System.out.println(bids.size());
-        System.out.println("ä»£ç�†å‡ºä»·æ•°é‡�/2");
-        System.out.println(halfOfLength);
-        System.out.println("ä»£ç�†å‡ºä»·æ•°é‡�å±•ç¤ºç»“æ�Ÿ");
-
-        System.out.println("ä»£ç�†å‡ºä»·åˆ†ä¸¤æ®µ");
-        System.out.println("ä»£ç�†å‡ºä»·å‰�æ®µ");
 
         for (int i = 0; i <= halfOfLength; i++) {
-
-            System.out.println("è¿™æ˜¯ç¬¬ï¼š" + i + " ä¸ªå‡ºä»·");
-
             Bid tmpBid = bids.get(i);
-
-            System.out.println("è¿™ä¸ªå‡ºä»·æ˜¯ï¼š" + tmpBid);
-
-            System.out.println("å¯¹äºŽè¿™ä¸ªå‡ºä»·çš„æ¯�ä¸ªé€‰é¡¹ï¼š");
             //double putValue = i;
 
 
             for (Issue issue : issuesList) {
                 Value avalue = tmpBid.getValue(issue.getNumber());
-
-                System.out.println("è¿™ä¸ªå‡ºä»·çš„ " + issue + " çš„å€¼æ˜¯" + avalue);
-
                 if (!frountPart.get(issue).containsKey(avalue)) {
 
 
                     frountPart.get(issue).put(avalue, 1.0);
-                    System.out.println("å‰�æ®µè®°å½•ä¸­ " + issue + " çš„ " + avalue + " æ²¡åœ¨è®°å½•ä¸­ï¼Œæˆ‘ä»¬éœ€è¦�åœ¨è®°å½•ä¸­äº§ç”Ÿæ–°çš„key");
 
                     if (!latterPart.get(issue).containsKey(avalue)) {
                         latterPart.get(issue).put(avalue, 0.0);
-
-                        System.out.println("å�Žæ®µè®°å½•ä¸­ " + issue + " çš„ " + avalue + " æ²¡åœ¨è®°å½•ä¸­ï¼Œæˆ‘ä»¬éœ€è¦�åœ¨è®°å½•ä¸­äº§ç”Ÿæ–°çš„key");
-
                     }
                 } else {
-
-                    System.out.println("å‰�æ®µè®°å½•ä¸­ " + issue + " çš„ " + avalue + " å·²åœ¨è®°å½•ä¸­ï¼Œæˆ‘ä»¬+1");
                     Double tmpNum = frountPart.get(issue).get(avalue);
                     tmpNum = tmpNum + 1.0;
                     frountPart.get(issue).replace(avalue, tmpNum);
@@ -508,104 +414,52 @@ class bidSearch {
 
             }
         }
-
-        System.out.println("ä»£ç�†å‡ºä»·å�Žæ®µ");
         for (int n = bids.size() - 1; n > halfOfLength ; n--){
-
-            System.out.println("è¿™æ˜¯ç¬¬ï¼š" + n + " ä¸ªå‡ºä»·");
 
             Bid tmpBid =  bids.get(n);
             List< Issue > bidIssuesList = tmpBid.getIssues();
-
-            System.out.println("å¯¹äºŽè¿™ä¸ªå‡ºä»·çš„æ¯�ä¸ªé€‰é¡¹ï¼š");
-            //double putValue = n;
             for (Issue issue : bidIssuesList) {
                 Value avalue = tmpBid.getValue(issue.getNumber());
-
-                System.out.println("è¿™ä¸ªå‡ºä»·çš„ " + issue + " çš„å€¼æ˜¯" + avalue);
-
                 if (!latterPart.get(issue).containsKey(avalue)){
                     latterPart.get(issue).put(avalue, 1.0);
-
-                    System.out.println("å�Žæ®µè®°å½•ä¸­ " + issue + " çš„ " + avalue + " æ²¡åœ¨è®°å½•ä¸­ï¼Œæˆ‘ä»¬éœ€è¦�åœ¨è®°å½•ä¸­äº§ç”Ÿæ–°çš„key");
-
                     if (!frountPart.get(issue).containsKey(avalue)){
                         frountPart.get(issue).put(avalue, 0.0);
-
-                        System.out.println("å‰�æ®µè®°å½•ä¸­ " + issue + " çš„ " + avalue + " æ²¡åœ¨è®°å½•ä¸­ï¼Œæˆ‘ä»¬éœ€è¦�åœ¨è®°å½•ä¸­äº§ç”Ÿæ–°çš„key");
                     }
                 }else{
-
-                    System.out.println("å�Žæ®µè®°å½•ä¸­ " + issue + " çš„ " + avalue + " å·²åœ¨è®°å½•ä¸­ï¼Œæˆ‘ä»¬+1");
-
                     Double tmpNum = latterPart.get(issue).get(avalue);
                     tmpNum = tmpNum + 1;
                     latterPart.get(issue).put(avalue, tmpNum);
                 }
             }
-
         }
-        System.out.println("ä»£ç�†å‡ºä»·åˆ†æ®µè®°å½•æˆ�åŠŸï¼Œä¸‹é�¢å¼€å§‹è®°å½•å‰�å�Žæ®µå��å·®å€¼");
-
-        System.out.println("å¯¹äºŽæ¯�ä¸ªè®ºç‚¹");
         for (Issue issue : issuesList) {
-            System.out.println("è®ºç‚¹ï¼š" + issue);
             latterValueList = latterPart.get(issue);
             biases.put(issue, new HashMap<Value, Double>());
 
 
-            for (Value kay: latterValueList.keySet()){
-                System.out.println("å¯¹äºŽè®ºç‚¹ " + issue + " çš„value :" + kay);
-                Double latterValue = latterValueList.get(kay);
-                Double frountValue = frountPart.get(issue).get(kay);
-                System.out.println("å®ƒå�Žæ®µé¢‘çŽ‡æ˜¯ï¼š " + latterValue);
-                System.out.println("å®ƒå‰�æ®µé¢‘çŽ‡æ˜¯ï¼š " + frountValue);
+            for (Value key: latterValueList.keySet()){
+                Double latterValue = latterValueList.get(key);
+                Double frountValue = frountPart.get(issue).get(key);
                 Double biaeses = latterValue - frountValue;
-                biases.get(issue).put(kay, biaeses);
-                System.out.println("å®ƒçš„å��å·®å€¼æ˜¯ï¼š " +  biases.get(issue).get(kay));
+                biases.get(issue).put(key, biaeses);
                 if (biaeses < minBiases){
                     minBiases = biaeses;
                 }
             }
         }
-
-
-        System.out.println("å��å·®å€¼è®¡ç®—æˆ�åŠŸ");
-        System.out.println("å��å·®å€¼åˆ—è¡¨æ˜¯ï¼š" + biases);
-
-        System.out.println("å��å·®å€¼ä¿®æ­£");
         if (minBiases < 0){
             minBiases = 0 - minBiases + 1;
             for (Issue issue : issuesList) {
                 issuesBiasesList = biases.get(issue);
-                for (Value kay: issuesBiasesList.keySet()){
-                    Double oldBiases = issuesBiasesList.get(kay);
+                for (Value key: issuesBiasesList.keySet()){
+                    Double oldBiases = issuesBiasesList.get(key);
                     Double newBiases = oldBiases + minBiases;
-                    biases.get(issue).replace(kay, newBiases);
+                    biases.get(issue).replace(key, newBiases);
                 }
 
             }
         }
-        System.out.println("ä¿®æ­£å�Žçš„å��å·®å€¼åˆ—è¡¨æ˜¯ï¼š" + biases);
-//
-//        System.out.println("å‡ºä»·æ�œç´¢æš‚æ—¶ç»“æ�Ÿ");
-//
-        //å‡ºä»·åˆ—è¡¨å¯¹åº”çš„å��å·®å€¼å±•ç¤º
-//        System.out.println("å·±æ–¹å‡ºä»·å��å·®æŽ’åº�ï¼Œåº”è¯¥ä»Žå°�åˆ°å¤§");
-//        for (Bid bid: bids){
-//            double biasesSum = 0.0;
-//            for (Issue issue: issuesList){
-//                //System.out.println("ä¸€æ¬¡å°�è¯•");
-//                Value issueValue = bid.getValue(issue.getNumber());
-//                // System.out.println("è¿™ä¸ªæŠ¥ä»·åœ¨ " + issue +  "ä¸Šçš„å€¼ä¸ºï¼š" + issueValue );
-//                biasesSum = biasesSum + biases.get(issue).get(issueValue);
-//            }
-//            System.out.println(biasesSum);
-//        }
 
-
-
-        //å�Žé�¢æ˜¯å¯¹å��å·®å€¼æŽ’åº�ç”¨
         for (Issue issue : issuesList) {
 
             BiasMap.put(issue, new LinkedHashMap<Value, Double>());
@@ -628,18 +482,14 @@ class bidSearch {
             }
             // BiasMap.put(issue, new LinkedHashMap<Value, Double>())
         }
-        System.out.println("12345");
-        System.out.println(BiasMap);
-        System.out.println("12345");
     }
 
     public HashMap<Issue, HashMap<Value, Double>> getBiases() {
-        System.out.println("å��å·®å€¼è¢«è°ƒç”¨");
         return  biases;
     }
 
     public  HashMap<Issue, LinkedHashMap<Value, Double>> getBiasMap(){
-        System.out.println("æŽ’åº�å��å·®å€¼è¢«è°ƒç”¨");
+
         return BiasMap;
     }
 
